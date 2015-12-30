@@ -240,20 +240,26 @@ def unenrollStudent(student_id, class_id):
 
     # check student already enrolled in class
     student = students.get(student_id)
-    if class_id not in student.courses:
+    if student.courses and class_id not in student.courses:
         return fail_str
 
     # remove student from course's students list
     course = courses.get(class_id)
     # find index of student and pop
-    s_index = course.students.index(student_id)
-    course.students.pop(s_index)
-    courses[class_id] = course
+    if course.students:
+        s_index = course.students.index(student_id)
+        course.students.pop(s_index)
+        courses[class_id] = course
+    else:
+        return fail_str
 
     # remove course from student's courses list
-    c_index = student.courses.index(class_id)
-    student.courses.pop(c_index)
-    students[student_id] = student
+    if student.courses:
+        c_index = student.courses.index(class_id)
+        student.courses.pop(c_index)
+        students[student_id] = student
+    else:
+        return fail_str
 
     course_spots = course.capacity - len(course.students)
     return_str = "Number of free spots left in class %s: %s" % (class_id, course_spots)

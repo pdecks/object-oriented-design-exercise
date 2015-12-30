@@ -165,20 +165,60 @@ def infoStudent(student_id):
     return return_str
 
   
-def enrollStudent(studentId, classId):
-  # If enrollment of the student in the class succeeded,
-  # return "Number of free spots left in class CLASSID: FREESPOTS" 
-  # where FREESPOTS is the number of free spots left 
-  # in the class after the student enrolls. 
-  # Otherwise, return "Enrollment of student STUDENTID in class CLASSID failed".
+def enrollStudent(student_id, class_id):
+    # If enrollment of the student in the class succeeded,
+    # return "Number of free spots left in class CLASSID: FREESPOTS" 
+    # where FREESPOTS is the number of free spots left 
+    # in the class after the student enrolls. 
+    # Otherwise, return "Enrollment of student STUDENTID in class CLASSID failed".
+
+    # check student exists and class exists
+    if students.get(student_id, 0) == 0 or courses.get(course_id, 0) == 0:
+        return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # check student not already enrolled in class
+    student = students.get(student_id)
+    if class_id in student.courses:
+        return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # check student has capacity to enroll
+    if len(student.courses) == student.capacity:
+        return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # check class has capacity for student
+    course = courses.get(class_id)
+    if len(course.students) == course.capacity:
+        return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # check class time inside student's available time interval
+    if course.time > student.end or course.time < student.start:
+        return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # check that student is not already taking a class at that time
+    # get all course times for courses taken by student
+    for c_id in student.courses:
+        if courses[c_id].time == course.time:
+            return "Enrollment of student STUDENTID in class CLASSID failed"
+
+    # add student to course
+    course.students.append(student_id)
+    courses[class_id] = course
+
+    # add course to student's course list
+    student.courses.append(class_id)
+    students[student_id] = student
+
+    course_spots = course.capacity - len(course.students)
+    return_str = "Number of free spots left in class CLASSID: " % course_spots
     return
 
+
 def unenrollStudent(studentId, classId):
-  # If unenrollment of the student in the class succeeded,
-  # return "Number of free spots left in class CLASSID: FREESPOTS" 
-  # where FREESPOTS is the number of free spots left in the class 
-  # after the student unenrolls. Otherwise, return "Unenrollment 
-  # of student STUDENTID in class CLASSID failed".
+    # If unenrollment of the student in the class succeeded,
+    # return "Number of free spots left in class CLASSID: FREESPOTS" 
+    # where FREESPOTS is the number of free spots left in the class 
+    # after the student unenrolls. Otherwise, return "Unenrollment 
+    # of student STUDENTID in class CLASSID failed".
 
     return
  

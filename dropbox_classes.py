@@ -92,7 +92,8 @@ def infoClass(class_id):
     if not course.students:
         return "Class %s is empty" % class_id
     
-    student_list = ",".join(sorted(course.students))
+    sorted_strings = [str(x) for x in sorted(course.students)]
+    student_list = ",".join(sorted_strings)
     return_str = "Class %s has the following students: %s" % (class_id, student_list)
 
     return return_str
@@ -161,7 +162,9 @@ def infoStudent(student_id):
     if not student.courses:
         return "Student %s is not taking any classes" % student_id
     
-    course_list = ",".join(sorted(student.courses))
+
+    sorted_strings = [str(x) for x in sorted(student.courses)]
+    course_list = ",".join(sorted_strings)
     return_str = "Student %s is taking the following classes: %s" % (student_id, course_list)
 
     return return_str
@@ -185,12 +188,12 @@ def enrollStudent(student_id, class_id):
         return fail_str
 
     # check student has capacity to enroll
-    if len(student.courses) == student.capacity:
+    if student.courses and len(student.courses) == student.capacity:
         return fail_str
 
     # check class has capacity for student
     course = courses.get(class_id)
-    if len(course.students) == course.capacity:
+    if course.students and len(course.students) == course.capacity:
         return fail_str
 
     # check class time inside student's available time interval
@@ -205,15 +208,21 @@ def enrollStudent(student_id, class_id):
                 return fail_str
 
     # add student to course
-    course.students.append(student_id)
+    if course.students:
+        course.students.append(student_id)
+    else:
+        course.students = [student_id]
     courses[class_id] = course
 
     # add course to student's course list
-    student.courses.append(class_id)
+    if student.courses:
+        student.courses.append(class_id)
+    else:
+        student.courses = [class_id]
     students[student_id] = student
 
     course_spots = course.capacity - len(course.students)
-    return_str = "Number of free spots left in class %s: " % (class_id, course_spots)
+    return_str = "Number of free spots left in class %s: %s" % (class_id, course_spots)
     return return_str
 
 
@@ -247,7 +256,7 @@ def unenrollStudent(student_id, class_id):
     students[student_id] = student
 
     course_spots = course.capacity - len(course.students)
-    return_str = "Number of free spots left in class %s: " % (class_id, course_spots)
+    return_str = "Number of free spots left in class %s: %s" % (class_id, course_spots)
     return return_str
 
 

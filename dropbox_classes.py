@@ -138,7 +138,7 @@ def removeStudent(student_id):
             student_index = course.students.index(student_id)
             course.students.pop(student_index)
             # update item in students dictionary
-            course[c_id] = course
+            courses[c_id] = course
 
     return "Successfully removed student %s" % student_id
 
@@ -235,7 +235,7 @@ def unenrollStudent(student_id, class_id):
 
     fail_str = "Unenrollment of student %s in class %s failed" % (student_id, class_id)
     # check student exists and class exists
-    if students.get(student_id, 0) == 0 or courses.get(course_id, 0) == 0:
+    if students.get(student_id, 0) == 0 or courses.get(class_id, 0) == 0:
         return fail_str
 
     # check student already enrolled in class

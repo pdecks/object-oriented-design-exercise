@@ -98,28 +98,72 @@ def infoClass(class_id):
 
   
 def addStudent(student_id, capacity, start, end):
-  # If the student is added successfully, 
-  # return "Successfully added student ID". 
-  # Otherwise, return "Error adding student ID".
-    return
+    # If the student is added successfully, 
+    # return "Successfully added student ID". 
+    # Otherwise, return "Error adding student ID".
+ 
+    if students.get(student_id, 0) != 0:
+        return "Error adding student ID"
+  
+    # add student
+    new_student = Student(student_id, capacity, start, end)
+    students[student_id] = new_student
+    
+    return "Successfully added student ID"
+
   
 def removeStudent(student_id):
-  # If the student is removed successfully, 
-  # return "Successfully removed student ID". 
-  # Otherwise, return "Error removing student ID".
-    return
+    # If the student is removed successfully, 
+    # return "Successfully removed student ID". 
+    # Otherwise, return "Error removing student ID".
+        # check if course already exists
+    if students.get(student_id, 0) == 0:
+        return "Error removing student ID"
+
+    # grab student info
+    student = students[student_id]
+    course_list = student.courses
+
+    # remove student from students
+    del students[student_id]
+
+    # TODO: unenroll student from all courses
+    for c_id in course_list:
+        # update course's list of students
+        course = courses[c_id]
+        # find index of student in course's list of students
+        student_index = course.students.index(student_id)
+        course.students.pop(student_index)
+        # update item in students dictionary
+        course[c_id] = course
+
+    return "Successfully removed student ID"
+
   
 def infoStudent(student_id):
-  # If the student does not exist, 
-  # return "Student ID does not exist". 
-  # If the student is not taking any classes, 
-  # return "Student ID is not taking any classes". 
-  # Otherwise, return the string 
-  # "Student ID is taking the following classes: LIST" 
-  # where LIST is a sorted, comma-separated list of class IDs 
-  # corresponding to classes that the student is 
-  # currently taking.
-    return
+    # If the student does not exist, 
+    # return "Student ID does not exist". 
+    # If the student is not taking any classes, 
+    # return "Student ID is not taking any classes". 
+    # Otherwise, return the string 
+    # "Student ID is taking the following classes: LIST" 
+    # where LIST is a sorted, comma-separated list of class IDs 
+    # corresponding to classes that the student is 
+    # currently taking.
+
+    # check if student already exists
+    if students.get(student_id, 0) == 0:
+        return "Student ID does not exist"
+
+    student = students.get(student_id)
+    if not student.courses:
+        return "Student ID is not taking any classes"
+    
+    course_list = ",".join(sorted(student.courses))
+    return_str = "Student ID is taking the following classes: %s" % course_list
+
+    return return_str
+
   
 def enrollStudent(studentId, classId):
   # If enrollment of the student in the class succeeded,

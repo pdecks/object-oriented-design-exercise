@@ -213,12 +213,35 @@ def enrollStudent(student_id, class_id):
     return
 
 
-def unenrollStudent(studentId, classId):
+def unenrollStudent(student_id, class_id):
     # If unenrollment of the student in the class succeeded,
     # return "Number of free spots left in class CLASSID: FREESPOTS" 
     # where FREESPOTS is the number of free spots left in the class 
     # after the student unenrolls. Otherwise, return "Unenrollment 
     # of student STUDENTID in class CLASSID failed".
 
-    return
+    # check student exists and class exists
+    if students.get(student_id, 0) == 0 or courses.get(course_id, 0) == 0:
+        return "Unenrollment of student STUDENTID in class CLASSID failed"
+
+    # check student already enrolled in class
+    student = students.get(student_id)
+    if class_id not in student.courses:
+        return "Unenrollment of student STUDENTID in class CLASSID failed"
+
+    # remove student from course's students list
+    course = courses.get(class_id)
+    # find index of student and pop
+    s_index = course.students.index(student_id)
+    course.students.pop(s_index)
+    courses[class_id] = course
+
+    # remove course from student's courses list
+    c_index = student.courses.index(class_id)
+    student.courses.pop(c_index)
+    students[student_id] = student
+
+    course_spots = course.capacity - len(course.students)
+    return_str = "Number of free spots left in class CLASSID: " % course_spots
+    return return_str
  

@@ -60,14 +60,15 @@ def removeClass(class_id):
     del courses[class_id]
 
     # TODO: unenroll all enrolled students
-    for s_id in student_list:
-        # update student's list of classes
-        student = students[s_id]
-        # find index of course in student's list of courses
-        course_index = student.courses.index(class_id)
-        student.courses.pop(course_index)
-        # update item in students dictionary
-        students[s_id] = student
+    if student_list:
+        for s_id in student_list:
+            # update student's list of classes
+            student = students[s_id]
+            # find index of course in student's list of courses
+            course_index = student.courses.index(class_id)
+            student.courses.pop(course_index)
+            # update item in students dictionary
+            students[s_id] = student
 
     return "Successfully removed class ID"
     
@@ -128,14 +129,15 @@ def removeStudent(student_id):
     del students[student_id]
 
     # TODO: unenroll student from all courses
-    for c_id in course_list:
-        # update course's list of students
-        course = courses[c_id]
-        # find index of student in course's list of students
-        student_index = course.students.index(student_id)
-        course.students.pop(student_index)
-        # update item in students dictionary
-        course[c_id] = course
+    if course_list:
+        for c_id in course_list:
+            # update course's list of students
+            course = courses[c_id]
+            # find index of student in course's list of students
+            student_index = course.students.index(student_id)
+            course.students.pop(student_index)
+            # update item in students dictionary
+            course[c_id] = course
 
     return "Successfully removed student ID"
 
@@ -173,12 +175,12 @@ def enrollStudent(student_id, class_id):
     # Otherwise, return "Enrollment of student STUDENTID in class CLASSID failed".
 
     # check student exists and class exists
-    if students.get(student_id, 0) == 0 or courses.get(course_id, 0) == 0:
+    if students.get(student_id, 0) == 0 or courses.get(class_id, 0) == 0:
         return "Enrollment of student STUDENTID in class CLASSID failed"
 
     # check student not already enrolled in class
     student = students.get(student_id)
-    if class_id in student.courses:
+    if student.courses and class_id in student.courses:
         return "Enrollment of student STUDENTID in class CLASSID failed"
 
     # check student has capacity to enroll
@@ -196,9 +198,10 @@ def enrollStudent(student_id, class_id):
 
     # check that student is not already taking a class at that time
     # get all course times for courses taken by student
-    for c_id in student.courses:
-        if courses[c_id].time == course.time:
-            return "Enrollment of student STUDENTID in class CLASSID failed"
+    if student.courses:
+        for c_id in student.courses:
+            if courses[c_id].time == course.time:
+                return "Enrollment of student STUDENTID in class CLASSID failed"
 
     # add student to course
     course.students.append(student_id)
@@ -244,4 +247,6 @@ def unenrollStudent(student_id, class_id):
     course_spots = course.capacity - len(course.students)
     return_str = "Number of free spots left in class CLASSID: " % course_spots
     return return_str
+
+
  

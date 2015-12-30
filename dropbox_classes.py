@@ -28,30 +28,74 @@ courses = {}
 students = {}
 
 def addClass(class_id, capacity, time):
-  # If the class is added successfully, 
-  # return "Successfully added class ID". 
-  # Otherwise, return "Error adding class ID".
+    # If the class is added successfully, 
+    # return "Successfully added class ID". 
+    # Otherwise, return "Error adding class ID".
 
-  # check is course already exists
-    return
+    # check if course already exists
+    if courses.get(class_id, 0) != 0:
+        return "Error adding class ID"
   
+    # add course
+    new_course = Course(class_id, capacity, time)
+    courses[class_id] = new_course
+    
+    return "Successfully added class ID"
+ 
+
 def removeClass(class_id):
-  # If the class is removed successfully,
-  # return "Successfully removed class ID". 
-  # Otherwise, return "Error removing class ID".
-    return
+    # If the class is removed successfully,
+    # return "Successfully removed class ID". 
+    # Otherwise, return "Error removing class ID".
+  
+    # check if course already exists
+    if courses.get(class_id, 0) == 0:
+        return "Error removing class ID"
+
+    # grab course info
+    course = courses[class_id]
+    student_list = course.students
+
+    # remove course from courses
+    del courses[class_id]
+
+    # TODO: unenroll all enrolled students
+    for s_id in student_list:
+        # update student's list of classes
+        student = students[s_id]
+        # find index of course in student's list of courses
+        course_index = student.courses.index(class_id)
+        student.courses.pop(course_index)
+        # update item in students dictionary
+        students[s_id] = student
+
+    return "Successfully removed class ID"
+    
   
 def infoClass(class_id):
-  # If the class does not exist, 
-  # return "Class ID does not exist". 
-  # If the class is empty, 
-  # return "Class ID is empty". 
-  # Otherwise, return the string 
-  # "Class ID has the following students: LIST" 
-  # where LIST is a sorted, comma-separated list 
-  # of student IDs corresponding to students currently 
-  # in the class.
-    return
+    # If the class does not exist, 
+    # return "Class ID does not exist". 
+    # If the class is empty, 
+    # return "Class ID is empty". 
+    # Otherwise, return the string 
+    # "Class ID has the following students: LIST" 
+    # where LIST is a sorted, comma-separated list 
+    # of student IDs corresponding to students currently 
+    # in the class.
+
+    # check if course already exists
+    if courses.get(class_id, 0) == 0:
+        return "Class ID does not exist"
+
+    course = courses.get(class_id)
+    if not course.students:
+        return "Class ID is empty"
+    
+    student_list = ",".join(sorted(course.students))
+    return_str = "Class ID has the following students: %s" % student_list
+
+    return return_str
+
   
 def addStudent(student_id, capacity, start, end):
   # If the student is added successfully, 

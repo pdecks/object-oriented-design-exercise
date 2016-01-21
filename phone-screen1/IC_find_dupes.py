@@ -23,6 +23,31 @@ def find_duplicate_files(starting_directory='/tmp/test'):
         # get its hash
         file_hash = sample_hash_file(current_path)
 
+        # get its last edited time
+        # getmtime: Return the time of last modification of path.
+        current_last_edited_time = os.path.getmtime(current_path)
+
+        # seen file before
+        if files_seen_already.get(file_hash, 0) != 0:
+            existing_last_edited_time, existing_path = files_seen_already[file_hash]
+
+            # current file is a duplicate
+            if current_last_edited_time > existing_last_edited_time:
+                duplicates.append((current_path, existing_path))
+            # existing file is duplicate
+            else:
+                duplicates.append((existing_path, current_path))
+                # update dictionary with new file's info
+                files_seen_already[file_hash] = \
+                    (current_last_edited_time, current_path)
+
+        # new file - add to dictionary
+        else:
+            files_seen_already[file_hash] = \
+                (current_last_edited_time, current_path)
+
+    return duplicates
+
 
 def sample_hash_file(path):
     num_bytes_to_read_per_sample = 4000 # why?

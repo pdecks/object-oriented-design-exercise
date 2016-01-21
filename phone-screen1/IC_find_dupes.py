@@ -1,7 +1,15 @@
+"""our function will walk through the file system, store files in a dictionary,
+and identify the more recently edited file as the copied one when it finds a
+duplicate.
+
+We're going to make our function iterative instead of recursive to avoid stack
+overflow 
+"""
+
 import os
 import hashlib
 
-def find_duplicate_files(starting_directory='/tmp/test'):
+def find_duplicate_files(starting_directory='./tmp/test'):
     files_seen_already = {}
     stack = [starting_directory]
 
@@ -50,7 +58,22 @@ def find_duplicate_files(starting_directory='/tmp/test'):
 
 
 def sample_hash_file(path):
-    num_bytes_to_read_per_sample = 4000 # why?
+    """We would like to store a constant-size "fingerprint" of the file in our
+    dictionary, instead of the whole file itself.
+
+    For each file, we have to look at every bit that the file occupies in order
+    to hash it and take a "fingerprint." That is why our time cost is high. Can
+    we fingerprint a file in constant time instead?
+
+    What if instead of hashing the whole contents of each file, we hashed three
+    fixed-size "samples" from each file made of the first xx bytes, the middle
+    xx bytes, and the last xx bytes? This would let us fingerprint a file in
+    constant time!"""
+    
+    # My super-hip Macintosh uses a file system called HFS+, which has a default
+    # block size of 4Kb (4,000 bytes) per block.
+    num_bytes_to_read_per_sample = 4000
+
     # Return the size, in bytes, of path.
     total_bytes = os.path.getsize(path)
 
@@ -69,12 +92,12 @@ def sample_hash_file(path):
             # read first, middle, and last bytes
             for offset_multiplier in xrange(3):
                 start_of_sample = offset_multiplier * (num_bytes_to_read_per_sample + num_bytes_between_samples)
-                # To change the file object’s position, use f.seek(offset, from_what)
+                # To change the file object position, use f.seek(offset, from_what)
                 file.seek(start_of_sample)
                 # size is an optional numeric argument for .read().
                 # When size is omitted or negative, the entire contents of the
-                # file will be read and returned; it’s your problem if the file
-                # is twice as large as your machine’s memory. Otherwise, at most
+                # file will be read and returned; it is your problem if the file
+                # is twice as large as your machines memory. Otherwise, at most
                 # size bytes are read and returned
                 sample = file.read(num_bytes_to_read_per_sample)
                 hasher.update(sample)
